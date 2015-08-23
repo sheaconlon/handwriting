@@ -1,11 +1,11 @@
-import numpy, random, math, sys, numpy
+import numpy, random, math, sys
 
-class base_neural_net:
+class base_neural_net(object):
 	pass
 
 class base_backpropogation_neural_net(base_neural_net):
 	def __init__(self, shape):
-		numpy.seterr(all = 'raise')
+		numpy.seterr(all = 'warn')
 		self._shape = shape
 		self._weights = [None for layerIndex in range(len(self._shape))]
 		for layerIndex in range(1, len(self._shape)):
