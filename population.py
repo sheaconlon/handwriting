@@ -70,6 +70,17 @@ class base_float_individual(base_individual):
 	def _random_gene(self):
 		return random.random() * 2 - 1
 
+class neural_net_individual(base_float_individual):
+	def __init__(self, crossover_probability, mutation_probability):
+		super(neural_net_individual, self).__init__(crossover_probability, mutation_probability, genetic_schema)
+		
+	def fitness(self, test_data, batch_size, learning_rate):
+		for layer_index in range(1, len(self._neural_net._shape)):
+			self._neural_net._weights[layer_index] = self._chromosomes[layer_index - 1].reshape((self._neural_net._shape[layer_index], self._neural_net._shape[layer_index - 1]))
+		for layer_index in range(1, len(self._neural_net._shape)):
+			self._neural_net._biases[layer_index] = self._chromosomes[len(self._neural_net._shape) - 1 + layer_index - 1].reshape(self._neural_net._shape[layer_index])
+		return self._neural_net.train(test_data, batch_size, learning_rate)
+
 class sigmoid_quadratic_backpropogation_neural_net_individual(base_float_individual):
 	def __init__(self, crossover_probability, mutation_probability, shape):
 		self._neural_net = neural_net.sigmoid_quadratic_backpropogation_neural_net(shape)
@@ -88,10 +99,3 @@ class sigmoid_quadratic_backpropogation_neural_net_individual(base_float_individ
 
 	def empty(self):
 		return sigmoid_quadratic_backpropogation_neural_net_individual(self._crossover_probability, self._mutation_probability, self._neural_net._shape)
-
-	def fitness(self, test_data, batch_size, learning_rate):
-		for layer_index in range(1, len(self._neural_net._shape)):
-			self._neural_net._weights[layer_index] = self._chromosomes[layer_index - 1].reshape((self._neural_net._shape[layer_index], self._neural_net._shape[layer_index - 1]))
-		for layer_index in range(1, len(self._neural_net._shape)):
-			self._neural_net._biases[layer_index] = self._chromosomes[len(self._neural_net._shape) - 1 + layer_index - 1].reshape(self._neural_net._shape[layer_index])
-		return self._neural_net.train(test_data, batch_size, learning_rate)
